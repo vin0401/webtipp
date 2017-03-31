@@ -6,4 +6,5 @@ Requirements:
 PHP 7.0+
 
 @author: Daniel Richardt drichardt@ymail.com
-@author Marvin Bertram: %email%
+
+@author Marvin Bertram: marvin.bertram@outlook.de
