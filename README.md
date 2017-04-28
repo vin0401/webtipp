@@ -5,6 +5,6 @@
 Requirements:
 PHP 7.0+
 
-@author: Daniel Richardt drichardt@ymail.com
+@author: Daniel Richardt d.richardt@dpmr-dev.de
 
 @author Marvin Bertram: marvin.bertram@outlook.de

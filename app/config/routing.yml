@@ -1,3 +1,19 @@
-app:
-    resource: '@WebtippBundle/Controller/'
-    type: annotation
+login:
+  path: /
+  defaults:  { _controller: WebtippBundle:Default:login }
+
+logout:
+  path: /logout
+  defaults:  { _controller: WebtippBundle:Default:logout }
+
+register:
+  path: /register
+  defaults:  { _controller: WebtippBundle:Default:register }
+
+dashboard:
+  path: /dashboard
+  defaults:  { _controller: WebtippBundle:Default:dashboard }
+
+profile:
+  path: /profile
+  defaults:  { _controller: WebtippBundle:Default:profile }

@@ -36,7 +36,7 @@ class UserRepositoryTest extends KernelTestCase
     {
         $user = new User();
         $user->setLogin('test');
-        $user->setMail('test');
+        $user->setMail('test@test.test');
         $user->setPassword('test');
         $user->setNameFirst('test');
         $user->setNameLast('test');
@@ -54,8 +54,7 @@ class UserRepositoryTest extends KernelTestCase
     {
         $user = $this->em
             ->getRepository('WebtippBundle:User')
-            ->findBy(['login' => 'test'])
-        ;
+            ->findBy(['login' => 'test']);
 
         $this->assertCount(1, $user);
     }
@@ -67,8 +66,7 @@ class UserRepositoryTest extends KernelTestCase
     {
         $users = $this->em
             ->getRepository('WebtippBundle:User')
-            ->findBy(['login' => 'test'])
-        ;
+            ->findBy(['login' => 'test']);
         $this->assertCount(1, $users);
 
         $user = $users[0];
@@ -79,8 +77,7 @@ class UserRepositoryTest extends KernelTestCase
 
         $users = $this->em
             ->getRepository('WebtippBundle:User')
-            ->findBy(['login' => 'test'])
-        ;
+            ->findBy(['login' => 'test']);
 
         $this->assertCount(0, $users);
     }

@@ -15,7 +15,7 @@ class DefaultControllerTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertGreaterThan(
             0,
-            $crawler->filter('html:contains("Hello World!")')->count()
+            $crawler->filter('html:contains("Einloggen")')->count()
         );
     }
 }
