@@ -10,55 +10,89 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="season_matchday_matches")
+ * @ORM\Table(name="matches")
  */
 class Match
 {
     /**
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     * @ORM\Id
+     * @var int|null
+     * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer", name="id", options={"unsigned"=true})
      */
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Matchday")
+     * @var \WebtippBundle\Entity\Matchday
+     *
+     * @ORM\ManyToOne(targetEntity="Matchday", inversedBy="matches")
      * @ORM\JoinColumn(name="id_matchday", referencedColumnName="id")
      */
     private $matchday;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Team")
-     * @ORM\JoinColumn(name="id_team_home", referencedColumnName="id")
+     * @var \WebtippBundle\Entity\Bet
+     *
+     * @ORM\OneToMany(targetEntity="Bet", mappedBy="match")
+     */
+    private $bets;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=100)
      */
     private $teamHome;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Team")
-     * @ORM\JoinColumn(name="id_team_away", referencedColumnName="id")
+     * @var string
+     *
+     * @ORM\Column(type="string", length=100)
      */
     private $teamAway;
 
     /**
-     * @ORM\Column(type="integer")
-     */
-    private $dateStart;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $dateEnd;
-
-
-    /**
-     * @ORM\Column(type="integer")
+     * @var integer
+     *
+     * @ORM\Column(type="integer", options={"unsigned"=true}, nullable=true)
      */
     private $goalsTeamHome;
 
     /**
-     * @ORM\Column(type="integer")
+     * @var integer
+     *
+     * @ORM\Column(type="integer", options={"unsigned"=true}, nullable=true)
      */
     private $goalsTeamAway;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", columnDefinition="ENUM('active', 'inactive')", options={"default" = "active"})
+     */
+    private $state;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(type="integer", options={"unsigned"=true})
+     */
+    private $dateStart;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(type="integer", options={"unsigned"=true})
+     */
+    private $dateEnd;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->bets = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -68,6 +102,54 @@ class Match
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set teamHome
+     *
+     * @param string $teamHome
+     *
+     * @return Match
+     */
+    public function setTeamHome($teamHome)
+    {
+        $this->teamHome = $teamHome;
+
+        return $this;
+    }
+
+    /**
+     * Get teamHome
+     *
+     * @return string
+     */
+    public function getTeamHome()
+    {
+        return $this->teamHome;
+    }
+
+    /**
+     * Set teamAway
+     *
+     * @param string $teamAway
+     *
+     * @return Match
+     */
+    public function setTeamAway($teamAway)
+    {
+        $this->teamAway = $teamAway;
+
+        return $this;
+    }
+
+    /**
+     * Get teamAway
+     *
+     * @return string
+     */
+    public function getTeamAway()
+    {
+        return $this->teamAway;
     }
 
     /**
@@ -167,6 +249,30 @@ class Match
     }
 
     /**
+     * Set type
+     *
+     * @param string $type
+     *
+     * @return Match
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
      * Set matchday
      *
      * @param \WebtippBundle\Entity\Matchday $matchday
@@ -191,50 +297,60 @@ class Match
     }
 
     /**
-     * Set teamHome
+     * Add bet
      *
-     * @param \WebtippBundle\Entity\Team $teamHome
+     * @param \WebtippBundle\Entity\Bet $bet
      *
      * @return Match
      */
-    public function setTeamHome(\WebtippBundle\Entity\Team $teamHome = null)
+    public function addBet(\WebtippBundle\Entity\Bet $bet)
     {
-        $this->teamHome = $teamHome;
+        $this->bets[] = $bet;
 
         return $this;
     }
 
     /**
-     * Get teamHome
+     * Remove bet
      *
-     * @return \WebtippBundle\Entity\Team
+     * @param \WebtippBundle\Entity\Bet $bet
      */
-    public function getTeamHome()
+    public function removeBet(\WebtippBundle\Entity\Bet $bet)
     {
-        return $this->teamHome;
+        $this->bets->removeElement($bet);
     }
 
     /**
-     * Set teamAway
+     * Get bets
      *
-     * @param \WebtippBundle\Entity\Team $teamAway
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBets()
+    {
+        return $this->bets;
+    }
+
+    /**
+     * Set state
+     *
+     * @param string $state
      *
      * @return Match
      */
-    public function setTeamAway(\WebtippBundle\Entity\Team $teamAway = null)
+    public function setState($state)
     {
-        $this->teamAway = $teamAway;
+        $this->state = $state;
 
         return $this;
     }
 
     /**
-     * Get teamAway
+     * Get state
      *
-     * @return \WebtippBundle\Entity\Team
+     * @return string
      */
-    public function getTeamAway()
+    public function getState()
     {
-        return $this->teamAway;
+        return $this->state;
     }
 }

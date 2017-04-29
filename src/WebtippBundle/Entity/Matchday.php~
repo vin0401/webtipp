@@ -5,36 +5,59 @@
  * Time: 19:49
  */
 namespace WebtippBundle\Entity;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="season_matchdays")
+ * @ORM\Table(name="matchdays")
  */
 class Matchday
 {
     /**
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     * @ORM\Id
+     * @var int|null
+     * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer", name="id", options={"unsigned"=true})
      */
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Season")
-     * @ORM\JoinColumn(name="id_season", referencedColumnName="id")
+     * @var \WebtippBundle\Entity\Group
+     *
+     * @ORM\ManyToOne(targetEntity="Group", inversedBy="matchdays")
+     * @ORM\JoinColumn(name="id_group", referencedColumnName="id")
      */
-    private $season;
+    private $group;
 
     /**
+     * @var \WebtippBundle\Entity\Match
+     *
+     * @ORM\OneToMany(targetEntity="Match", mappedBy="matchday")
+     */
+    private $matches;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(type="integer")
      */
     private $dateStart;
 
     /**
+     * @var integer
+     *
      * @ORM\Column(type="integer")
      */
     private $dateEnd;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->matches = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -51,7 +74,7 @@ class Matchday
      *
      * @param integer $dateStart
      *
-     * @return Match
+     * @return Matchday
      */
     public function setDateStart($dateStart)
     {
@@ -75,7 +98,7 @@ class Matchday
      *
      * @param integer $dateEnd
      *
-     * @return Match
+     * @return Matchday
      */
     public function setDateEnd($dateEnd)
     {
@@ -95,146 +118,60 @@ class Matchday
     }
 
     /**
-     * Set goalsTeamHome
+     * Set group
      *
-     * @param integer $goalsTeamHome
-     *
-     * @return Match
-     */
-    public function setGoalsTeamHome($goalsTeamHome)
-    {
-        $this->goalsTeamHome = $goalsTeamHome;
-
-        return $this;
-    }
-
-    /**
-     * Get goalsTeamHome
-     *
-     * @return integer
-     */
-    public function getGoalsTeamHome()
-    {
-        return $this->goalsTeamHome;
-    }
-
-    /**
-     * Set goalsTeamAway
-     *
-     * @param integer $goalsTeamAway
-     *
-     * @return Match
-     */
-    public function setGoalsTeamAway($goalsTeamAway)
-    {
-        $this->goalsTeamAway = $goalsTeamAway;
-
-        return $this;
-    }
-
-    /**
-     * Get goalsTeamAway
-     *
-     * @return integer
-     */
-    public function getGoalsTeamAway()
-    {
-        return $this->goalsTeamAway;
-    }
-
-    /**
-     * Set matchday
-     *
-     * @param \WebtippBundle\Entity\Matchday $matchday
-     *
-     * @return Match
-     */
-    public function setMatchday(\WebtippBundle\Entity\Matchday $matchday = null)
-    {
-        $this->matchday = $matchday;
-
-        return $this;
-    }
-
-    /**
-     * Get matchday
-     *
-     * @return \WebtippBundle\Entity\Matchday
-     */
-    public function getMatchday()
-    {
-        return $this->matchday;
-    }
-
-    /**
-     * Set teamHome
-     *
-     * @param \WebtippBundle\Entity\Team $teamHome
-     *
-     * @return Match
-     */
-    public function setTeamHome(\WebtippBundle\Entity\Team $teamHome = null)
-    {
-        $this->teamHome = $teamHome;
-
-        return $this;
-    }
-
-    /**
-     * Get teamHome
-     *
-     * @return \WebtippBundle\Entity\Team
-     */
-    public function getTeamHome()
-    {
-        return $this->teamHome;
-    }
-
-    /**
-     * Set teamAway
-     *
-     * @param \WebtippBundle\Entity\Team $teamAway
-     *
-     * @return Match
-     */
-    public function setTeamAway(\WebtippBundle\Entity\Team $teamAway = null)
-    {
-        $this->teamAway = $teamAway;
-
-        return $this;
-    }
-
-    /**
-     * Get teamAway
-     *
-     * @return \WebtippBundle\Entity\Team
-     */
-    public function getTeamAway()
-    {
-        return $this->teamAway;
-    }
-
-    /**
-     * Set season
-     *
-     * @param \WebtippBundle\Entity\Season $season
+     * @param \WebtippBundle\Entity\Group $group
      *
      * @return Matchday
      */
-    public function setSeason(\WebtippBundle\Entity\Season $season = null)
+    public function setGroup(\WebtippBundle\Entity\Group $group = null)
     {
-        $this->season = $season;
+        $this->group = $group;
 
         return $this;
     }
 
     /**
-     * Get season
+     * Get group
      *
-     * @return \WebtippBundle\Entity\Season
+     * @return \WebtippBundle\Entity\Group
      */
-    public function getSeason()
+    public function getGroup()
     {
-        return $this->season;
+        return $this->group;
+    }
+
+    /**
+     * Add match
+     *
+     * @param \WebtippBundle\Entity\Match $match
+     *
+     * @return Matchday
+     */
+    public function addMatch(\WebtippBundle\Entity\Match $match)
+    {
+        $this->matches[] = $match;
+
+        return $this;
+    }
+
+    /**
+     * Remove match
+     *
+     * @param \WebtippBundle\Entity\Match $match
+     */
+    public function removeMatch(\WebtippBundle\Entity\Match $match)
+    {
+        $this->matches->removeElement($match);
+    }
+
+    /**
+     * Get matches
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMatches()
+    {
+        return $this->matches;
     }
 }

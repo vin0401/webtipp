@@ -5,6 +5,7 @@
  * Time: 19:49
  */
 namespace WebtippBundle\Entity;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -14,52 +15,110 @@ use Doctrine\ORM\Mapping as ORM;
 class User
 {
     /**
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     * @ORM\Id
+     * @var int
+     * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer", name="id", options={"unsigned"=true})
      */
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="BettingGame", inversedBy="betting_games")
-     * @ORM\JoinTable(name="users_betting_games")
+     * @var \WebtippBundle\Entity\Group
+     *
+     * @ORM\ManyToMany(targetEntity="Group", inversedBy="users")
+     * @ORM\JoinTable(
+     *  name="user_groups",
+     *  joinColumns={
+     *      @ORM\JoinColumn(name="id_user", referencedColumnName="id")
+     *  },
+     *  inverseJoinColumns={
+     *      @ORM\JoinColumn(name="id_group", referencedColumnName="id")
+     *  }
+     * )
      */
-    private $bettingGames;
+    protected $groups;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @var \WebtippBundle\Entity\Right
+     *
+     * @ORM\ManyToMany(targetEntity="Right", inversedBy="users")
+     * @ORM\JoinTable(
+     *  name="user_rights",
+     *  joinColumns={
+     *      @ORM\JoinColumn(name="id_user", referencedColumnName="id")
+     *  },
+     *  inverseJoinColumns={
+     *      @ORM\JoinColumn(name="id_right", referencedColumnName="id")
+     *  }
+     * )
+     */
+    protected $rights;
+
+    /**
+     * @var \WebtippBundle\Entity\Bet
+     *
+     * @ORM\OneToMany(targetEntity="Bet", mappedBy="user")
+     */
+    private $bets;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", unique=true, length=100)
      */
     private $login;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=100)
      */
     private $password;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=100)
      */
     private $nameFirst;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=100)
      */
     private $nameLast;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="string", columnDefinition="ENUM('male', 'female')")
      */
     private $gender;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @var string
+     *
+     * @ORM\Column(type="string", unique=true, length=100)
      */
     private $mail;
 
     /**
-     * @ORM\Column(type="string", columnDefinition="ENUM('admin', 'normal')", options={"default" = "normal"})
+     * @var string
+     *
+     * @ORM\Column(type="string", columnDefinition="ENUM('active', 'inactive')")
      */
-    private $type;
+    private $state;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rights = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->bets = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -96,30 +155,6 @@ class User
     }
 
     /**
-     * Set mail
-     *
-     * @param string $mail
-     *
-     * @return User
-     */
-    public function setMail($mail)
-    {
-        $this->mail = $mail;
-
-        return $this;
-    }
-
-    /**
-     * Get mail
-     *
-     * @return string
-     */
-    public function getMail()
-    {
-        return $this->mail;
-    }
-
-    /**
      * Set password
      *
      * @param string $password
@@ -141,30 +176,6 @@ class User
     public function getPassword()
     {
         return $this->password;
-    }
-
-    /**
-     * Set gender
-     *
-     * @param string $gender
-     *
-     * @return User
-     */
-    public function setGender($gender)
-    {
-        $this->gender = $gender;
-
-        return $this;
-    }
-
-    /**
-     * Get gender
-     *
-     * @return string
-     */
-    public function getGender()
-    {
-        return $this->gender;
     }
 
     /**
@@ -216,67 +227,176 @@ class User
     }
 
     /**
-     * Set type
+     * Set gender
      *
-     * @param string $type
+     * @param string $gender
      *
      * @return User
      */
-    public function setType($type)
+    public function setGender($gender)
     {
-        $this->type = $type;
+        $this->gender = $gender;
 
         return $this;
     }
 
     /**
-     * Get type
+     * Get gender
      *
      * @return string
      */
-    public function getType()
+    public function getGender()
     {
-        return $this->type;
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->bettingGames = new \Doctrine\Common\Collections\ArrayCollection();
+        return $this->gender;
     }
 
     /**
-     * Add bettingGame
+     * Set mail
      *
-     * @param \WebtippBundle\Entity\BettingGame $bettingGame
+     * @param string $mail
      *
      * @return User
      */
-    public function addBettingGame(\WebtippBundle\Entity\BettingGame $bettingGame)
+    public function setMail($mail)
     {
-        $this->bettingGames[] = $bettingGame;
+        $this->mail = $mail;
 
         return $this;
     }
 
     /**
-     * Remove bettingGame
+     * Get mail
      *
-     * @param \WebtippBundle\Entity\BettingGame $bettingGame
+     * @return string
      */
-    public function removeBettingGame(\WebtippBundle\Entity\BettingGame $bettingGame)
+    public function getMail()
     {
-        $this->bettingGames->removeElement($bettingGame);
+        return $this->mail;
     }
 
     /**
-     * Get bettingGames
+     * Add group
+     *
+     * @param \WebtippBundle\Entity\Group $group
+     *
+     * @return User
+     */
+    public function addGroup(\WebtippBundle\Entity\Group $group)
+    {
+        $this->groups[] = $group;
+
+        return $this;
+    }
+
+    /**
+     * Remove group
+     *
+     * @param \WebtippBundle\Entity\Group $group
+     */
+    public function removeGroup(\WebtippBundle\Entity\Group $group)
+    {
+        $this->groups->removeElement($group);
+    }
+
+    /**
+     * Get groups
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getBettingGames()
+    public function getGroups()
     {
-        return $this->bettingGames;
+        return $this->groups;
+    }
+
+    /**
+     * Add right
+     *
+     * @param \WebtippBundle\Entity\Right $right
+     *
+     * @return User
+     */
+    public function addRight(\WebtippBundle\Entity\Right $right)
+    {
+        $this->rights[] = $right;
+
+        return $this;
+    }
+
+    /**
+     * Remove right
+     *
+     * @param \WebtippBundle\Entity\Right $right
+     */
+    public function removeRight(\WebtippBundle\Entity\Right $right)
+    {
+        $this->rights->removeElement($right);
+    }
+
+    /**
+     * Get rights
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRights()
+    {
+        return $this->rights;
+    }
+
+    /**
+     * Add bet
+     *
+     * @param \WebtippBundle\Entity\Bet $bet
+     *
+     * @return User
+     */
+    public function addBet(\WebtippBundle\Entity\Bet $bet)
+    {
+        $this->bets[] = $bet;
+
+        return $this;
+    }
+
+    /**
+     * Remove bet
+     *
+     * @param \WebtippBundle\Entity\Bet $bet
+     */
+    public function removeBet(\WebtippBundle\Entity\Bet $bet)
+    {
+        $this->bets->removeElement($bet);
+    }
+
+    /**
+     * Get bets
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBets()
+    {
+        return $this->bets;
+    }
+
+    /**
+     * Set state
+     *
+     * @param string $state
+     *
+     * @return User
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * Get state
+     *
+     * @return string
+     */
+    public function getState()
+    {
+        return $this->state;
     }
 }
