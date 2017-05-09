@@ -15,7 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Group
 {
     /**
-     * @var int|null
+     * @var integer
+     *
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", name="id", options={"unsigned"=true})
@@ -23,11 +24,11 @@ class Group
     private $id;
 
     /**
-     * @var \WebtippBundle\Entity\User
+     * @var \WebtippBundle\Entity\UserGroupMapping
      *
-     * @ORM\ManyToMany(targetEntity="User", mappedBy="groups")
+     * @ORM\OneToMany(targetEntity="UserGroupMapping", mappedBy="group")
      */
-    private $users;
+    private $userGroupMappings;
 
     /**
      * @var \WebtippBundle\Entity\Right
@@ -37,26 +38,27 @@ class Group
     private $rights;
 
     /**
-     * @var \WebtippBundle\Entity\Matchday
+     * @var \WebtippBundle\Entity\Bet
      *
-     * @ORM\OneToMany(targetEntity="Matchday", mappedBy="group")
+     * @ORM\OneToMany(targetEntity="Bet", mappedBy="group")
      */
-    private $matchdays;
-    
+    private $bets;
+
+    /**
+     * @var string
+     *
+     * @ORM\ManyToOne(targetEntity="Season", inversedBy="groups")
+     * @ORM\JoinColumn(name="id_season", referencedColumnName="id")
+     */
+    private $season;
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=100)
      */
     private $name;
-    
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=100)
-     */
-    private $season;
-    
+
     /**
      * @var integer
      *
@@ -72,11 +74,27 @@ class Group
     private $points_part;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(
+     *     type="string", nullable=false, columnDefinition="ENUM('public', 'closed')", options={"default":"closed"}
+     *     )
+     */
+    private $type = 'closed';
+
+    /**
      * @var integer
      *
      * @ORM\Column(type="integer")
      */
-    private $createDate;
+    private $dateCreate;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $dateUpdate;
 
     /**
      * @var \WebtippBundle\Entity\User
@@ -87,13 +105,35 @@ class Group
     private $createUser;
 
     /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMatchdays()
+    {
+        return $this->getSeason()->getMatchdays();
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return Right
+     */
+    public function getRight($type = 'normal')
+    {
+        foreach ($this->getRights() as $right) {
+            if ($right->getType() === $type) {
+                return $right;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
         $this->rights = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->matchdays = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -128,30 +168,6 @@ class Group
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Set season
-     *
-     * @param string $season
-     *
-     * @return Group
-     */
-    public function setSeason($season)
-    {
-        $this->season = $season;
-
-        return $this;
-    }
-
-    /**
-     * Get season
-     *
-     * @return string
-     */
-    public function getSeason()
-    {
-        return $this->season;
     }
 
     /**
@@ -203,75 +219,27 @@ class Group
     }
 
     /**
-     * Set createDate
+     * Set dateCreate
      *
-     * @param integer $createDate
+     * @param integer $dateCreate
      *
      * @return Group
      */
-    public function setCreateDate($createDate)
+    public function setDateCreate($dateCreate)
     {
-        $this->createDate = $createDate;
+        $this->dateCreate = $dateCreate;
 
         return $this;
     }
 
     /**
-     * Get createDate
+     * Get dateCreate
      *
      * @return integer
      */
-    public function getCreateDate()
+    public function getDateCreate()
     {
-        return $this->createDate;
-    }
-
-    /**
-     * Set createUser
-     *
-     * @param integer $createUser
-     *
-     * @return Group
-     */
-    public function setCreateUser($createUser)
-    {
-        $this->createUser = $createUser;
-
-        return $this;
-    }
-
-    /**
-     * Get createUser
-     *
-     * @return integer
-     */
-    public function getCreateUser()
-    {
-        return $this->createUser;
-    }
-
-    /**
-     * Add user
-     *
-     * @param \WebtippBundle\Entity\User $user
-     *
-     * @return Group
-     */
-    public function addUser(\WebtippBundle\Entity\User $user)
-    {
-        $this->users[] = $user;
-
-        return $this;
-    }
-
-    /**
-     * Remove user
-     *
-     * @param \WebtippBundle\Entity\User $user
-     */
-    public function removeUser(\WebtippBundle\Entity\User $user)
-    {
-        $this->users->removeElement($user);
+        return $this->dateCreate;
     }
 
     /**
@@ -281,7 +249,13 @@ class Group
      */
     public function getUsers()
     {
-        return $this->users;
+        $users = new \Doctrine\Common\Collections\ArrayCollection();
+
+        foreach ($this->userGroupMappings as $userGroupMapping) {
+            $users[] = $userGroupMapping->getUser();
+        }
+        
+        return $users;
     }
 
     /**
@@ -319,36 +293,167 @@ class Group
     }
 
     /**
-     * Add matchday
+     * Set season
      *
-     * @param \WebtippBundle\Entity\Matchday $matchday
+     * @param \WebtippBundle\Entity\Season $season
      *
      * @return Group
      */
-    public function addMatchday(\WebtippBundle\Entity\Matchday $matchday)
+    public function setSeason(\WebtippBundle\Entity\Season $season = null)
     {
-        $this->matchdays[] = $matchday;
+        $this->season = $season;
 
         return $this;
     }
 
     /**
-     * Remove matchday
+     * Get season
      *
-     * @param \WebtippBundle\Entity\Matchday $matchday
+     * @return \WebtippBundle\Entity\Season
      */
-    public function removeMatchday(\WebtippBundle\Entity\Matchday $matchday)
+    public function getSeason()
     {
-        $this->matchdays->removeElement($matchday);
+        return $this->season;
     }
 
     /**
-     * Get matchdays
+     * Set createUser
+     *
+     * @param \WebtippBundle\Entity\User $createUser
+     *
+     * @return Group
+     */
+    public function setCreateUser(\WebtippBundle\Entity\User $createUser = null)
+    {
+        $this->createUser = $createUser;
+
+        return $this;
+    }
+
+    /**
+     * Get createUser
+     *
+     * @return \WebtippBundle\Entity\User
+     */
+    public function getCreateUser()
+    {
+        return $this->createUser;
+    }
+
+    /**
+     * Add bet
+     *
+     * @param \WebtippBundle\Entity\Bet $bet
+     *
+     * @return Group
+     */
+    public function addBet(\WebtippBundle\Entity\Bet $bet)
+    {
+        $this->bets[] = $bet;
+
+        return $this;
+    }
+
+    /**
+     * Remove bet
+     *
+     * @param \WebtippBundle\Entity\Bet $bet
+     */
+    public function removeBet(\WebtippBundle\Entity\Bet $bet)
+    {
+        $this->bets->removeElement($bet);
+    }
+
+    /**
+     * Get bets
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getMatchdays()
+    public function getBets()
     {
-        return $this->matchdays;
+        return $this->bets;
+    }
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     *
+     * @return Group
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+
+    /**
+     * Add userGroupMapping
+     *
+     * @param \WebtippBundle\Entity\UserGroupMapping $userGroupMapping
+     *
+     * @return Group
+     */
+    public function addUserGroupMapping(\WebtippBundle\Entity\UserGroupMapping $userGroupMapping)
+    {
+        $this->userGroupMappings[] = $userGroupMapping;
+
+        return $this;
+    }
+
+    /**
+     * Remove userGroupMapping
+     *
+     * @param \WebtippBundle\Entity\UserGroupMapping $userGroupMapping
+     */
+    public function removeUserGroupMapping(\WebtippBundle\Entity\UserGroupMapping $userGroupMapping)
+    {
+        $this->userGroupMappings->removeElement($userGroupMapping);
+    }
+
+    /**
+     * Get userGroupMappings
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUserGroupMappings()
+    {
+        return $this->userGroupMappings;
+    }
+
+    /**
+     * Set dateUpdate
+     *
+     * @param integer $dateUpdate
+     *
+     * @return Group
+     */
+    public function setDateUpdate($dateUpdate)
+    {
+        $this->dateUpdate = $dateUpdate;
+
+        return $this;
+    }
+
+    /**
+     * Get dateUpdate
+     *
+     * @return integer
+     */
+    public function getDateUpdate()
+    {
+        return $this->dateUpdate;
     }
 }

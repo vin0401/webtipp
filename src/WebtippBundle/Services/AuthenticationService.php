@@ -31,8 +31,8 @@ class AuthenticationService extends ServiceAbstract
      */
     protected function init(RequestStack $requestStack, EntityManager $em)
     {
-        $this->_request = $requestStack->getCurrentRequest();
-        $this->_em = $em;
+        $this->request = $requestStack->getCurrentRequest();
+        $this->em = $em;
     }
 
     /**
@@ -62,7 +62,7 @@ class AuthenticationService extends ServiceAbstract
      */
     public function login($username, $id)
     {
-        $session = $this->_request->getSession();
+        $session = $this->request->getSession();
 
         $session->set('user', $username);
         $session->set('token', md5($id));
@@ -72,7 +72,7 @@ class AuthenticationService extends ServiceAbstract
      */
     public function logout()
     {
-        $this->_request->getSession()->invalidate();
+        $this->request->getSession()->invalidate();
     }
 
     /**
@@ -80,8 +80,8 @@ class AuthenticationService extends ServiceAbstract
      */
     public function isLoggedIn()
     {
-        $session = $this->_request->getSession();
-        $repository = $this->_em->getRepository('WebtippBundle:User');
+        $session = $this->request->getSession();
+        $repository = $this->em->getRepository('WebtippBundle:User');
         $user = $repository->findOneBy(["login" => $session->get('user')]);
 
         return (!empty($user) && md5($user->getId()) === $session->get('token'));
@@ -92,14 +92,14 @@ class AuthenticationService extends ServiceAbstract
      */
     public function getCurrentUser()
     {
-        $session = $this->_request->getSession();
-        $repository = $this->_em->getRepository('WebtippBundle:User');
+        $session = $this->request->getSession();
+        $repository = $this->em->getRepository('WebtippBundle:User');
         $user = $repository->findOneBy(["login" => $session->get('user')]);
 
         if (!empty($user) && md5($user->getId()) === $session->get('token')) {
             return $user;
         }
 
-        return null;
+        return false;
     }
 }
