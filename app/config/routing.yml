@@ -1,59 +1,19 @@
 login:
   path: /
-  defaults:  { _controller: WebtippBundle:User:login }
+  defaults:  { _controller: WebtippBundle:Default:login }
 
 logout:
   path: /logout
-  defaults:  { _controller: WebtippBundle:User:logout }
+  defaults:  { _controller: WebtippBundle:Default:logout }
 
 register:
   path: /register
-  defaults:  { _controller: WebtippBundle:User:register }
-
-change-profile:
-  path: /change-profile
-  defaults:  { _controller: WebtippBundle:User:changeProfile }
-
-user-profile:
-  path: /user/{userSlug}/profile
-  defaults:  { _controller: WebtippBundle:User:profile }
+  defaults:  { _controller: WebtippBundle:Default:register }
 
 dashboard:
   path: /dashboard
   defaults:  { _controller: WebtippBundle:Default:dashboard }
 
-groups:
-  path: /groups
-  defaults:  { _controller: WebtippBundle:Group:index }
-
-create-group:
-  path: /groups/create
-  defaults:  { _controller: WebtippBundle:Group:create }
-
-join-group:
-  path: /groups/join/{slug}
-  defaults:  { _controller: WebtippBundle:Group:join }
-
-group:
-  path: /groups/{slug}
-  defaults:  { _controller: WebtippBundle:Group:detail }
-
-matchday:
-  path: /groups/{groupSlug}/matchday/{matchdaySlug}
-  defaults:  { _controller: WebtippBundle:Matchday:detail }
-
-place-bet:
-  path: /groups/{groupSlug}/matchday/{matchdaySlug}/place-bet
-  defaults:  { _controller: WebtippBundle:Matchday:placeBet }
-
-sync-all:
-  path: /sync/all
-  defaults:  { _controller: WebtippBundle:Default:syncAll }
-
-sync-bets:
-  path: /sync/bets
-  defaults:  { _controller: WebtippBundle:Default:syncBets }
-
-sync-scores:
-  path: /sync/scores
-  defaults:  { _controller: WebtippBundle:Default:syncScores }
+profile:
+  path: /profile
+  defaults:  { _controller: WebtippBundle:Default:profile }

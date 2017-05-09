@@ -4,7 +4,6 @@
  * Date: 26.04.2017
  * Time: 19:49
  */
-
 namespace WebtippBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -16,8 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Bet
 {
     /**
-     * @var integer
-     *
+     * @var int|null
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", name="id", options={"unsigned"=true})
@@ -31,14 +29,6 @@ class Bet
      * @ORM\JoinColumn(name="id_user", referencedColumnName="id")
      */
     private $user;
-
-    /**
-     * @var \WebtippBundle\Entity\Group
-     *
-     * @ORM\ManyToOne(targetEntity="Group", inversedBy="bets")
-     * @ORM\JoinColumn(name="id_group", referencedColumnName="id")
-     */
-    private $group;
 
     /**
      * @var \WebtippBundle\Entity\Match
@@ -63,24 +53,6 @@ class Bet
     private $goalsTeamAway;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(
-     *     type="string",
-     *     columnDefinition="ENUM('won', 'part', 'lost', 'pending')",
-     *     options={"default" = "normal"}
-     * )
-     */
-    private $state;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(type="integer", nullable=true, options={"unsigned"=true})
-     */
-    private $score;
-
-    /**
      * @var integer
      *
      * @ORM\Column(type="integer")
@@ -95,54 +67,11 @@ class Bet
     private $dateUpdate;
 
     /**
-     * @return Matchday
+     * @var string
+     *
+     * @ORM\Column(type="string", columnDefinition="ENUM('won', 'lost', 'pending')", options={"default" = "normal"})
      */
-    public function getMatchday()
-    {
-        return $this->getMatch()->getMatchday();
-    }
-
-    /**
-     * @return string
-     */
-    public function format()
-    {
-        return ($this->getGoalsTeamHome() . ':' . $this->getGoalsTeamAway());
-    }
-
-    /**
-     * @return integer
-     */
-    public function getScore()
-    {
-        return $this->score;
-    }
-
-    /**
-     * @return Team
-     */
-    public function getTeamHome()
-    {
-        return $this->getMatch()->getTeamHome();
-    }
-
-    /**
-     * @return Team
-     */
-    public function getTeamAway()
-    {
-        return $this->getMatch()->getTeamAway();
-    }
-
-    /**
-     * @return int
-     */
-    public function getResultGoalsTeamAway()
-    {
-        $result = $this->getMatch()->getResult();
-
-        return $result->getGoalsTeamHome();
-    }
+    private $state;
 
     /**
      * Get id
@@ -200,30 +129,6 @@ class Bet
     public function getGoalsTeamAway()
     {
         return $this->goalsTeamAway;
-    }
-
-    /**
-     * Set state
-     *
-     * @param string $state
-     *
-     * @return Bet
-     */
-    public function setState($state)
-    {
-        $this->state = $state;
-
-        return $this;
-    }
-
-    /**
-     * Get state
-     *
-     * @return string
-     */
-    public function getState()
-    {
-        return $this->state;
     }
 
     /**
@@ -323,40 +228,26 @@ class Bet
     }
 
     /**
-     * Set group
+     * Set state
      *
-     * @param \WebtippBundle\Entity\Group $group
+     * @param string $state
      *
      * @return Bet
      */
-    public function setGroup(\WebtippBundle\Entity\Group $group = null)
+    public function setState($state)
     {
-        $this->group = $group;
+        $this->state = $state;
 
         return $this;
     }
 
     /**
-     * Get group
+     * Get state
      *
-     * @return \WebtippBundle\Entity\Group
+     * @return string
      */
-    public function getGroup()
+    public function getState()
     {
-        return $this->group;
-    }
-
-    /**
-     * Set score
-     *
-     * @param integer $score
-     *
-     * @return Bet
-     */
-    public function setScore($score)
-    {
-        $this->score = $score;
-
-        return $this;
+        return $this->state;
     }
 }

@@ -4,7 +4,6 @@
  * Date: 26.04.2017
  * Time: 19:49
  */
-
 namespace WebtippBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -16,28 +15,20 @@ use Doctrine\ORM\Mapping as ORM;
 class Matchday
 {
     /**
-     * @var integer
-     *
+     * @var int|null
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\Column(type="integer", name="id", options={"unsigned"=true})
      */
     private $id;
 
     /**
-     * @var integer
+     * @var \WebtippBundle\Entity\Group
      *
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\ManyToOne(targetEntity="Group", inversedBy="matchdays")
+     * @ORM\JoinColumn(name="id_group", referencedColumnName="id")
      */
-    private $idApi;
-
-    /**
-     * @var \WebtippBundle\Entity\Season
-     *
-     * @ORM\ManyToOne(targetEntity="Season", inversedBy="matchdays")
-     * @ORM\JoinColumn(name="id_season", referencedColumnName="id")
-     */
-    private $season;
+    private $group;
 
     /**
      * @var \WebtippBundle\Entity\Match
@@ -45,20 +36,6 @@ class Matchday
      * @ORM\OneToMany(targetEntity="Match", mappedBy="matchday")
      */
     private $matches;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=100)
-     */
-    private $name;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="`order`", type="integer", options={"unsigned"=true})
-     */
-    private $order;
 
     /**
      * @var integer
@@ -75,39 +52,10 @@ class Matchday
     private $dateEnd;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(type="integer")
-     */
-    private $dateUpdate;
-
-    /**
-     * Get id
-     *
-     * @param string|null $type
-     *
-     * @return integer
-     */
-    public function getResults($type = null)
-    {
-        $results = [];
-        foreach ($this->getMatches() as $match) {
-            foreach ($match->getResults() as $result) {
-                if ($type === null || $type === $result->getType()) {
-                    $results[] = $result;
-                }
-            }
-        }
-
-        return $results;
-    }
-
-    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->seasons = new \Doctrine\Common\Collections\ArrayCollection();
         $this->matches = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -119,78 +67,6 @@ class Matchday
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set idApi
-     *
-     * @param integer $idApi
-     *
-     * @return Matchday
-     */
-    public function setIdApi($idApi)
-    {
-        $this->idApi = $idApi;
-
-        return $this;
-    }
-
-    /**
-     * Get idApi
-     *
-     * @return integer
-     */
-    public function getIdApi()
-    {
-        return $this->idApi;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Matchday
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set order
-     *
-     * @param integer $order
-     *
-     * @return Matchday
-     */
-    public function setOrder($order)
-    {
-        $this->order = $order;
-
-        return $this;
-    }
-
-    /**
-     * Get order
-     *
-     * @return integer
-     */
-    public function getOrder()
-    {
-        return $this->order;
     }
 
     /**
@@ -242,61 +118,27 @@ class Matchday
     }
 
     /**
-     * Set dateUpdate
+     * Set group
      *
-     * @param integer $dateUpdate
+     * @param \WebtippBundle\Entity\Group $group
      *
      * @return Matchday
      */
-    public function setDateUpdate($dateUpdate)
+    public function setGroup(\WebtippBundle\Entity\Group $group = null)
     {
-        $this->dateUpdate = $dateUpdate;
+        $this->group = $group;
 
         return $this;
     }
 
     /**
-     * Get dateUpdate
+     * Get group
      *
-     * @return integer
+     * @return \WebtippBundle\Entity\Group
      */
-    public function getDateUpdate()
+    public function getGroup()
     {
-        return $this->dateUpdate;
-    }
-
-    /**
-     * Add season
-     *
-     * @param \WebtippBundle\Entity\Season $season
-     *
-     * @return Matchday
-     */
-    public function addSeason(\WebtippBundle\Entity\Season $season)
-    {
-        $this->seasons[] = $season;
-
-        return $this;
-    }
-
-    /**
-     * Remove season
-     *
-     * @param \WebtippBundle\Entity\Season $season
-     */
-    public function removeSeason(\WebtippBundle\Entity\Season $season)
-    {
-        $this->seasons->removeElement($season);
-    }
-
-    /**
-     * Get seasons
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getSeasons()
-    {
-        return $this->seasons;
+        return $this->group;
     }
 
     /**
@@ -331,53 +173,5 @@ class Matchday
     public function getMatches()
     {
         return $this->matches;
-    }
-
-    /**
-     * Set season
-     *
-     * @param \WebtippBundle\Entity\Season $season
-     *
-     * @return Matchday
-     */
-    public function setSeason(\WebtippBundle\Entity\Season $season = null)
-    {
-        $this->season = $season;
-
-        return $this;
-    }
-
-    /**
-     * Get season
-     *
-     * @return \WebtippBundle\Entity\Season
-     */
-    public function getSeason()
-    {
-        return $this->season;
-    }
-
-    /**
-     * Set state
-     *
-     * @param string $state
-     *
-     * @return Matchday
-     */
-    public function setState($state)
-    {
-        $this->state = $state;
-
-        return $this;
-    }
-
-    /**
-     * Get state
-     *
-     * @return string
-     */
-    public function getState()
-    {
-        return $this->state;
     }
 }

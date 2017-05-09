@@ -1,15 +1,6 @@
 parameters:
-  open-liga:
-    api:
-      url: ''
 
 services:
   authentication:
     class:     WebtippBundle\Services\AuthenticationService
     arguments: ['@request_stack', '@doctrine.orm.entity_manager']
-  open-liga-api:
-    class:     WebtippBundle\Services\OpenLiga\ApiService
-    arguments: ['@doctrine.orm.entity_manager']
-  open-liga-databridge:
-    class:     WebtippBundle\Services\OpenLiga\DatabridgeService
-    arguments: ['@doctrine.orm.entity_manager', '@open-liga-api']
