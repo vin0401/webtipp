@@ -7,7 +7,6 @@ Installation:
 
 ```bash
 composer install
-print s
 ```
 
 
