@@ -3,7 +3,7 @@
 
 Symfony application using [OpenLigaDB](https://www.openligadb.de/).
 
-Installation:
+Installation with composer:
 
 ```bash
 composer install
@@ -14,6 +14,7 @@ composer install
 Requirements:
 
 PHP 7.0+
+[Composer](https://getcomposer.org/)
 
 Authors: 
 
