@@ -14,6 +14,7 @@ composer install
 Requirements:
 
 PHP 7.0+
+
 [Composer](https://getcomposer.org/)
 
 Authors: 
