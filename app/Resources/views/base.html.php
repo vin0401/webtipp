@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title><?php $view['slots']->output('title', 'Hello World') ?></title>
+    <title><?php $view['slots']->output('title', 'Webtipp') ?></title>
 </head>
 <body>
 <?php $view['slots']->output('_content') ?>

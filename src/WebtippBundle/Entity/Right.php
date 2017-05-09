@@ -15,10 +15,11 @@ use Doctrine\ORM\Mapping as ORM;
 class Right
 {
     /**
-     * @var int
+     * @var integer
+     *
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer", name="id", options={"unsigned"=true})
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      */
     private $id;
 
@@ -46,6 +47,13 @@ class Right
      */
     private $type;
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -103,14 +111,6 @@ class Right
     public function getGroup()
     {
         return $this->group;
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**

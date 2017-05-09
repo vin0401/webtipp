@@ -4,39 +4,30 @@
  * Date: 26.04.2017
  * Time: 19:49
  */
+
 namespace WebtippBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="users")
+ * @UniqueEntity("mail")
+ * @UniqueEntity("login")
  */
 class User
 {
     /**
-     * @var int
+     * @var integer
+     *
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer", name="id", options={"unsigned"=true})
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      */
     private $id;
-
-    /**
-     * @var \WebtippBundle\Entity\Group
-     *
-     * @ORM\ManyToMany(targetEntity="Group", inversedBy="users")
-     * @ORM\JoinTable(
-     *  name="user_groups",
-     *  joinColumns={
-     *      @ORM\JoinColumn(name="id_user", referencedColumnName="id")
-     *  },
-     *  inverseJoinColumns={
-     *      @ORM\JoinColumn(name="id_group", referencedColumnName="id")
-     *  }
-     * )
-     */
-    protected $groups;
 
     /**
      * @var \WebtippBundle\Entity\Right
@@ -62,7 +53,15 @@ class User
     private $bets;
 
     /**
+     * @var \WebtippBundle\Entity\UserGroupMapping
+     *
+     * @ORM\OneToMany(targetEntity="UserGroupMapping", mappedBy="user")
+     */
+    private $userGroupMappings;
+
+    /**
      * @var string
+     * @Assert\NotBlank()
      *
      * @ORM\Column(type="string", unique=true, length=100)
      */
@@ -70,6 +69,7 @@ class User
 
     /**
      * @var string
+     * @Assert\NotBlank()
      *
      * @ORM\Column(type="string", length=100)
      */
@@ -77,6 +77,7 @@ class User
 
     /**
      * @var string
+     * @Assert\NotBlank()
      *
      * @ORM\Column(type="string", length=100)
      */
@@ -84,6 +85,7 @@ class User
 
     /**
      * @var string
+     * @Assert\NotBlank()
      *
      * @ORM\Column(type="string", length=100)
      */
@@ -91,13 +93,40 @@ class User
 
     /**
      * @var string
+     * @Assert\NotBlank()
      *
      * @ORM\Column(type="string", columnDefinition="ENUM('male', 'female')")
      */
     private $gender;
 
     /**
+     * @var integer
+     * @Assert\NotBlank()
+     *
+     * @ORM\Column(type="integer")
+     */
+    private $birthday;
+
+    /**
      * @var string
+     * @Assert\NotBlank()
+     * @Assert\Image(
+     *     allowLandscape = false,
+     *     allowPortrait = false
+     * )
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\File(mimeTypes={ "image/jpeg", "image/png" })
+     */
+    private $image;
+
+    /**
+     * @var string
+     * @Assert\NotBlank()
+     * @Assert\Email(
+     *     message = "The email '{{ value }}' is not a valid email.",
+     *     checkMX = true
+     * )
      *
      * @ORM\Column(type="string", unique=true, length=100)
      */
@@ -109,6 +138,198 @@ class User
      * @ORM\Column(type="string", columnDefinition="ENUM('active', 'inactive')")
      */
     private $state;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(type="integer")
+     */
+    private $dateCreate;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(type="integer")
+     */
+    private $dateUpdate;
+
+    /**
+     * @param Group $group
+     * @param Match $match
+     *
+     * @return integer
+     */
+    public function getMatchScore(Group $group, Match $match)
+    {
+        $score = 0;
+
+        $pointsFull = $group->getPointsFull();
+        $pointsPart = $group->getPointsPart();
+
+        foreach ($this->getBets() as $bet) {
+            if ($bet->getGroup() === $group && $match === $bet->getMatch()) {
+                $state = $bet->getState();
+
+                if ($state === 'won') {
+                    $score += $pointsFull;
+                }
+
+                if ($state === 'part') {
+                    $score += $pointsPart;
+                }
+            }
+        }
+
+        return $score;
+    }
+
+    /**
+     * @param Group $group
+     * @param Matchday $matchday
+     *
+     * @return integer
+     */
+    public function getMatchdayScore(Group $group, Matchday $matchday)
+    {
+        $score = 0;
+
+        $pointsFull = $group->getPointsFull();
+        $pointsPart = $group->getPointsPart();
+
+        foreach ($this->getBets() as $bet) {
+            if ($bet->getGroup() === $group && $matchday === $bet->getMatchday()) {
+                $state = $bet->getState();
+
+                if ($state === 'won') {
+                    $score += $pointsFull;
+                }
+
+                if ($state === 'part') {
+                    $score += $pointsPart;
+                }
+            }
+        }
+
+        return $score;
+    }
+
+    /**
+     * @param Group $group
+     *
+     * @return integer
+     */
+    public function getTotalScore(Group $group)
+    {
+        $score = 0;
+
+        $pointsFull = $group->getPointsFull();
+        $pointsPart = $group->getPointsPart();
+
+        foreach ($this->getBets() as $bet) {
+            if ($bet->getGroup() === $group) {
+                $state = $bet->getState();
+
+                if ($state === 'won') {
+                    $score += $pointsFull;
+                }
+
+                if ($state === 'part') {
+                    $score += $pointsPart;
+                }
+            }
+        }
+
+        return $score;
+    }
+
+    /**
+     * @param Group $group
+     *
+     * @return true|false
+     */
+    public function hasGroup(Group $group)
+    {
+        foreach ($this->getGroups() as $existingGroup) {
+            if ($group === $existingGroup) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBets()
+    {
+        return $this->bets;
+    }
+
+    /**
+     * @param Group $group
+     * @param Matchday $matchday
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMatchdayBets(Group $group, Matchday $matchday)
+    {
+        $bets = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach ($this->getBets() as $bet) {
+            if ($bet->getGroup() === $group && (is_null($matchday) || $matchday === $bet->getMatchday())) {
+                $bets[] = $bet;
+            }
+        }
+
+        return $bets;
+    }
+
+    /**
+     * @param Group $group
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getGroupBets(Group $group)
+    {
+        $bets = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach ($this->getBets() as $bet) {
+            if ($bet->getGroup() === $group) {
+                $bets[] = $bet;
+            }
+        }
+
+        return $bets;
+    }
+
+    /**
+     * @param Group $group
+     * @param Match $match
+     *
+     * @return Bet|false
+     */
+    public function getMatchBet(Group $group, Match $match)
+    {
+        foreach ($this->getBets() as $bet) {
+            if ($bet->getGroup() === $group && $bet->getMatch() === $match) {
+                return $bet;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getGroups()
+    {
+        $groups = new \Doctrine\Common\Collections\ArrayCollection();
+
+        foreach ($this->getUserGroupMappings() as $userGroupMapping) {
+            $groups[] = $userGroupMapping->getGroup();
+        }
+
+        return $groups;
+    }
 
     /**
      * Constructor
@@ -275,37 +496,27 @@ class User
     }
 
     /**
-     * Add group
+     * Set state
      *
-     * @param \WebtippBundle\Entity\Group $group
+     * @param string $state
      *
      * @return User
      */
-    public function addGroup(\WebtippBundle\Entity\Group $group)
+    public function setState($state)
     {
-        $this->groups[] = $group;
+        $this->state = $state;
 
         return $this;
     }
 
     /**
-     * Remove group
+     * Get state
      *
-     * @param \WebtippBundle\Entity\Group $group
+     * @return string
      */
-    public function removeGroup(\WebtippBundle\Entity\Group $group)
+    public function getState()
     {
-        $this->groups->removeElement($group);
-    }
-
-    /**
-     * Get groups
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getGroups()
-    {
-        return $this->groups;
+        return $this->state;
     }
 
     /**
@@ -367,36 +578,180 @@ class User
     }
 
     /**
-     * Get bets
+     * Set imagePath
      *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getBets()
-    {
-        return $this->bets;
-    }
-
-    /**
-     * Set state
-     *
-     * @param string $state
+     * @param string $imagePath
      *
      * @return User
      */
-    public function setState($state)
+    public function setImagePath($imagePath)
     {
-        $this->state = $state;
+        $this->imagePath = $imagePath;
 
         return $this;
     }
 
     /**
-     * Get state
+     * Get imagePath
      *
      * @return string
      */
-    public function getState()
+    public function getImagePath()
     {
-        return $this->state;
+        return $this->imagePath;
+    }
+
+    /**
+     * Set imageUrl
+     *
+     * @param string $imageUrl
+     *
+     * @return User
+     */
+    public function setImageUrl($imageUrl)
+    {
+        $this->imageUrl = $imageUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get imageUrl
+     *
+     * @return string
+     */
+    public function getImageUrl()
+    {
+        return $this->imageUrl;
+    }
+
+    /**
+     * Add userGroupMapping
+     *
+     * @param \WebtippBundle\Entity\UserGroupMapping $userGroupMapping
+     *
+     * @return User
+     */
+    public function addUserGroupMapping(\WebtippBundle\Entity\UserGroupMapping $userGroupMapping)
+    {
+        $this->userGroupMappings[] = $userGroupMapping;
+
+        return $this;
+    }
+
+    /**
+     * Remove userGroupMapping
+     *
+     * @param \WebtippBundle\Entity\UserGroupMapping $userGroupMapping
+     */
+    public function removeUserGroupMapping(\WebtippBundle\Entity\UserGroupMapping $userGroupMapping)
+    {
+        $this->userGroupMappings->removeElement($userGroupMapping);
+    }
+
+    /**
+     * Get userGroupMappings
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUserGroupMappings()
+    {
+        return $this->userGroupMappings;
+    }
+
+    /**
+     * Set image
+     *
+     * @param string $image
+     *
+     * @return User
+     */
+    public function setImage($image)
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * Get image
+     *
+     * @return string
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * Set birthday
+     *
+     * @param integer $birthday
+     *
+     * @return User
+     */
+    public function setBirthday($birthday)
+    {
+        $this->birthday = $birthday;
+
+        return $this;
+    }
+
+    /**
+     * Get birthday
+     *
+     * @return integer
+     */
+    public function getBirthday()
+    {
+        return $this->birthday;
+    }
+
+    /**
+     * Set dateCreate
+     *
+     * @param integer $dateCreate
+     *
+     * @return User
+     */
+    public function setDateCreate($dateCreate)
+    {
+        $this->dateCreate = $dateCreate;
+
+        return $this;
+    }
+
+    /**
+     * Get dateCreate
+     *
+     * @return integer
+     */
+    public function getDateCreate()
+    {
+        return $this->dateCreate;
+    }
+
+    /**
+     * Set dateUpdate
+     *
+     * @param integer $dateUpdate
+     *
+     * @return User
+     */
+    public function setDateUpdate($dateUpdate)
+    {
+        $this->dateUpdate = $dateUpdate;
+
+        return $this;
+    }
+
+    /**
+     * Get dateUpdate
+     *
+     * @return integer
+     */
+    public function getDateUpdate()
+    {
+        return $this->dateUpdate;
     }
 }
