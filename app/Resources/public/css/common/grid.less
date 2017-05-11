@@ -1,0 +1,21 @@
+.row {
+  display: flex;
+}
+
+.generate-columns(@column, @columns, @name) when (@column > 0) {
+  .col-@{name}-@{column} {
+    width: 100% / @columns * @column;
+  }
+
+  .generate-columns((@column - 1), @columns, @name);
+}
+
+.generate-columns(@columns, @columns, phone);
+
+@media screen and (min-width: @phone-ls) {
+  .generate-columns(@columns, @columns, tablet);
+}
+
+@media screen and (min-width: @tablet-ls) {
+  .generate-columns(@columns, @columns, desktop);
+}

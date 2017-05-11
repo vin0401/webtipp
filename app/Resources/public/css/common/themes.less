@@ -1,0 +1,37 @@
+.generateTheme(@theme-name, @background-color, @link-color, @text-color, @button-color) {
+	.@{theme-name} {
+		.background, &.background {
+			color: @text-color;
+			background: @background-color;
+		}
+		
+		a {
+			color: @link-color;
+			transition: .2s color;
+			
+			&:hover {
+				color: lighten(@link-color, 10%);
+			}
+		}
+		
+		.button, &.button, input[type="submit"] {
+			color: @background-color;
+			background-color: @button-color;
+			box-shadow: 0 0 0 #000;
+			transition: background .2s , color .2s, box-shadow .2s;
+			
+			&.hover {
+				box-shadow: 2px 2px 5px lighten(#000, 5%);
+			}
+		}
+	}
+}
+
+// 				name 	 background link		text 	  button
+.generateTheme(theme-01, @color-01, @color-03, @color-03, @color-03);
+.generateTheme(theme-02, @color-02, @color-01, @color-03, @color-01);
+.generateTheme(theme-03, @color-03, @color-01, @color-02, @color-01);
+
+.theme-01 {
+	font-weight: 700;
+}

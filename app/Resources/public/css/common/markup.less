@@ -1,0 +1,129 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Assistant';
+  background: #c2c2c2;
+}
+
+img {
+	display: block;
+  width: 100%;
+  height: auto;
+}
+
+.big-icon {
+	text-align: center;
+	font-size: 120px;
+}
+
+.form-element {
+	padding: 0 10px;
+
+	margin-top: 20px;
+
+	input[type="submit"] {
+	  margin-top: 10px;
+	}
+
+  .radio-collection {
+    .radiobox {
+      float: left;
+      margin-top: 3px;
+      margin-left: 20px;
+
+      &:first-of-type {
+        margin-left: 0;
+      }
+    }
+
+    &::after {
+      content: ' ';
+      clear: both;
+      display: block;
+    }
+
+    label {
+      display: inline-block;
+    }
+  }
+}
+
+nav {
+  text-align: right;
+
+  ul, ul li {
+    display: inline-block;
+
+    a {
+      font-size: 18px;
+      font-family: 'Poppins';
+    }
+  }
+
+  ul {
+    li {
+      padding-left: 20px;
+    }
+  }
+}
+
+a {
+  text-decoration: none;
+  transition: 0.5s color;
+}
+
+.align-right {
+  text-align: right;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.button, button, input[type="submit"] {
+  display: inline-block;
+  padding: 12px 27px;
+  width: auto;
+  box-sizing: border-box;
+  cursor: pointer;
+  border: none;
+  font-weight: 700;
+  font-family: 'Poppins';
+  text-transform: uppercase;
+  text-decoration: underline;
+
+  &:hover {
+    transition: box-shadow .3s, background .3s;
+  }
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+
+  &.required {
+    & + ul {
+      color: #ff413a;
+    }
+  }
+}
+
+input[type="password"], input[type="text"], input[type="email"], select {
+  width : 100%;
+  padding: 10px;
+}
+
+.site-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.content {
+  width: 100%;
+  max-width: @max-content-width;
+  margin: auto;
+  padding: 20px;
+}

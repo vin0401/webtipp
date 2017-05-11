@@ -1,4 +1,4 @@
-<?php $view->extend('::base.html.php'); ?>
+<?php $view->extend('::base.html.php') ?>
     <form method="post" action="<?= $this->container->get('router')->generate('create-group'); ?>">
         <label for="name">Name</label>
         <input type="text" name="name" id="name" value="<?= $group->getName() ?>"/>
