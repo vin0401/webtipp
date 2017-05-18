@@ -1,4 +1,11 @@
 <?php $view->extend('::base.html.php') ?>
+    <div class="head-image">
+        <img src="resources/images/register/head.jpeg"/>
+    </div>
+    <div class="theme-01 background">
+
+    <div class="content">
+    <div class="groups">
     <form method="post" action="<?= $this->container->get('router')->generate('create-group'); ?>">
         <label for="name">Name</label>
         <input type="text" name="name" id="name" value="<?= $group->getName() ?>"/>
@@ -27,6 +34,8 @@
         <button type="submit">Submit</button>
     </form>
     <a href="<?= $this->container->get('router')->generate('groups'); ?>">Overview</a>
+    </div>
+    </div>
 <?php
 if (!empty($errors)) {
     var_dump($errors);

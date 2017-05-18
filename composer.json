@@ -45,7 +45,10 @@
             "php bin/console doctrine:database:create",
             "php bin/console doctrine:schema:update --force",
             "php bin/console app:sync-database",
-            "ln -s app/Resources/public/ web/resources"
+            "ln -s ../app/Resources/public/ web/resources",
+            "npm install",
+            "node_modules/bower/bin/bower install",
+            "grunt build"
         ],
         "post-update-cmd": [
             "@symfony-scripts"

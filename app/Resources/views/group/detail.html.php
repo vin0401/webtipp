@@ -1,4 +1,11 @@
 <?php $view->extend('::base.html.php'); ?>
+<div class="head-image">
+    <img src="resources/images/register/head.jpeg"/>
+</div>
+<div class="theme-01 background">
+
+    <div class="content">
+        <div class="groups">
     <table>
         <thead>
         <tr>
@@ -19,7 +26,7 @@
         </tr>
         </tbody>
     </table>
-
+    <div style="overflow-x: scroll">
     <p>Benutzer</p>
     <table>
         <thead>
@@ -47,6 +54,7 @@
         <?php } ?>
         </tbody>
     </table>
+    </div>
 
 <?php if (count($group->getSeason()->getMatchdays()) > 0) { ?>
     <p>Matchdays</p>
@@ -75,3 +83,5 @@
     </table>
 <?php } ?>
 <a href="<?= $this->container->get('router')->generate('groups'); ?>">Groups</a>
+            </div>
+        </div>

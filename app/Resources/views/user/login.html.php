@@ -1,20 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Webtipp</title>
-    <link href="resources/css/app.less" type="text/less" rel="stylesheet">
-    <script type="text/javascript" src="resources/bower/jquery/dist/jquery.min.js"></script>
-    <script>
-        less = {
-            env: "development",
-            poll: 200
-        };
-    </script>
-    <script type="text/javascript" src="resources/bower/less/dist/less.min.js"></script>
-
-</head>
-<body>
-<div class="site-wrapper">
+<?php $view->extend('::base.html.php') ?>
     <header class="theme-03 background">
         <div class="content row">
             <div class="col-phone-4">
@@ -73,19 +57,5 @@
             </div>
         </div>
     </div>
-    <footer>
-        <div class="theme-02 background">
-            <div class="content">
-                <nav>
-                    <ul>
-                        <li><a href="#">Imprint</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </footer>
-</div>
-</body>
-</html>
 
 

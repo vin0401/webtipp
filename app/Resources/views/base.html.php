@@ -26,7 +26,7 @@
                             <li><a href="#">Statistiken</a></li>
                             <li><a href="#">Tipprunden</a></li>
                             <li class="login-item">
-                                <a href="#"><a href="#"><div class="login-box">Lg</div></a>
+                                <a href="#"><a href="#"><div class="login-box">DA</div></a>
                             </li>
                         </ul>
                     </nav>

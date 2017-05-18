@@ -1,6 +1,14 @@
 <?php
 $view->extend('::base.html.php');
 ?>
+
+    <div class="head-image">
+        <img src="resources/images/register/head.jpeg"/>
+    </div>
+    <div class="theme-01 background">
+
+    <div class="content">
+    <div class="groups">
 <?php
 if ($submit) {
     ?>
@@ -144,6 +152,7 @@ if ($submit) {
         </tbody>
     </table>
     <a  href="<?= $this->container->get('router')->generate('group', ['slug' => $group->getId()]); ?>">Back to group</a>
-
+</div>
+    </div>
 <?php
 var_dump($others);
